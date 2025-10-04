@@ -1,0 +1,485 @@
+{% extends 'pcapp/base.html' %}
+
+{% block title %}Contact Us - PC Hardware Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #6200ea;
+        --primary-light: #9d46ff;
+        --primary-dark: #0a00b6;
+        --accent-color: #00e5ff;
+        --success-color: #00c853;
+        --warning-color: #ffd600;
+        --danger-color: #ff3d00;
+        --dark-bg: #121212;
+        --card-bg: #1e1e1e;
+        --text-light: #ffffff;
+        --text-secondary: #b0b0b0;
+    }
+    
+    .contact-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 2rem 2rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+        animation: shine 3s infinite linear;
+        z-index: 1;
+    }
+    
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .contact-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .contact-subtitle {
+        font-weight: 300;
+        color: var(--accent-color);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .neon-card {
+        background-color: var(--card-bg);
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .neon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+        background-size: 200% 100%;
+        animation: gradientBorder 3s infinite linear;
+    }
+    
+    @keyframes gradientBorder {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 200% 0%; }
+    }
+    
+    .card-header-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        border-bottom: none;
+        padding: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .neon-btn {
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        border: none;
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+        z-index: -1;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    .neon-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-btn-primary:hover {
+        box-shadow: 0 8px 25px rgba(98, 0, 234, 0.5);
+        color: var(--text-light);
+    }
+    
+    .neon-form-control {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.5rem;
+        color: var(--text-light);
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .neon-form-control:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 0.25rem rgba(98, 0, 234, 0.25);
+        color: var(--text-light);
+    }
+    
+    .neon-form-label {
+        color: var(--primary-light);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .neon-form-text {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+    
+    .contact-icon {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+        color: var(--accent-color);
+    }
+    
+    .contact-info-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .contact-info-icon i {
+        font-size: 1.5rem;
+        color: var(--text-light);
+    }
+    
+    .contact-info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .contact-info-item:hover .contact-info-icon {
+        transform: scale(1.1);
+        box-shadow: 0 6px 15px rgba(98, 0, 234, 0.4);
+    }
+    
+    .contact-info-content h5 {
+        color: var(--primary-light);
+        margin-bottom: 0.25rem;
+    }
+    
+    .contact-info-content p {
+        color: var(--text-secondary);
+        margin-bottom: 0;
+    }
+    
+    .contact-form-item {
+        transition: all 0.3s ease;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .contact-info-item:nth-child(1) { animation-delay: 0.1s; }
+    .contact-info-item:nth-child(2) { animation-delay: 0.2s; }
+    .contact-info-item:nth-child(3) { animation-delay: 0.3s; }
+    .contact-info-item:nth-child(4) { animation-delay: 0.4s; }
+    
+    .contact-form-item:nth-child(1) { animation-delay: 0.1s; }
+    .contact-form-item:nth-child(2) { animation-delay: 0.2s; }
+    .contact-form-item:nth-child(3) { animation-delay: 0.3s; }
+    .contact-form-item:nth-child(4) { animation-delay: 0.4s; }
+    .contact-form-item:nth-child(5) { animation-delay: 0.5s; }
+    
+    .map-container {
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+    
+    .map-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid transparent;
+        border-radius: 1rem;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color)) border-box;
+        -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        animation: gradientBorder 3s infinite linear;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contact-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 contact-title">Contact Us</h1>
+                <p class="lead contact-subtitle">We'd love to hear from you!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="neon-card mb-4">
+                <div class="card-header card-header-primary">
+                    <h4 class="mb-0"><i class="fas fa-paper-plane contact-icon"></i>Send Us a Message</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3 contact-form-item">
+                            <label for="{{ form.name.id_for_label }}" class="neon-form-label"><i class="fas fa-user contact-icon"></i>Your Name</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3 contact-form-item">
+                            <label for="{{ form.email.id_for_label }}" class="neon-form-label"><i class="fas fa-envelope contact-icon"></i>Email Address</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3 contact-form-item">
+                            <label for="{{ form.subject.id_for_label }}" class="neon-form-label"><i class="fas fa-heading contact-icon"></i>Subject</label>
+                            {{ form.subject }}
+                            {% if form.subject.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.subject.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3 contact-form-item">
+                            <label for="{{ form.message.id_for_label }}" class="neon-form-label"><i class="fas fa-comment-alt contact-icon"></i>Message</label>
+                            {{ form.message }}
+                            {% if form.message.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.message.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid contact-form-item">
+                            <button type="submit" class="neon-btn neon-btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="neon-card mb-4">
+                <div class="card-header card-header-primary">
+                    <h4 class="mb-0"><i class="fas fa-info-circle contact-icon"></i>Contact Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-info-content">
+                            <h5>Address</h5>
+                            <p>
+                                PC Hardware Shop<br>
+                                123 Tech Street, Sector 18<br>
+                                Noida, Uttar Pradesh 201301<br>
+                                India
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-info-content">
+                            <h5>Phone</h5>
+                            <p>
+                                Customer Support: +91 98765 43210<br>
+                                Technical Support: +91 98765 43211<br>
+                                Sales: +91 98765 43212
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-info-content">
+                            <h5>Email</h5>
+                            <p>
+                                General Inquiries: info@pchardwareshop.com<br>
+                                Support: support@pchardwareshop.com<br>
+                                Sales: sales@pchardwareshop.com
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-info-content">
+                            <h5>Business Hours</h5>
+                            <p>
+                                Monday - Saturday: 10:00 AM - 8:00 PM<br>
+                                Sunday: Closed
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="neon-card">
+                <div class="card-header card-header-primary">
+                    <h4 class="mb-0"><i class="fas fa-map contact-icon"></i>Location</h4>
+                </div>
+                <div class="card-body">
+                    <div class="map-container">
+                        <div class="ratio ratio-1x1">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.5141501920523!2d77.32371491508346!3d28.618895982423885!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce5366c3d1d19%3A0x71f0e610c441b093!2sSector%2018%2C%20Noida%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1615276000000!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add custom classes to form fields
+    document.addEventListener('DOMContentLoaded', function() {
+        const textFields = document.querySelectorAll('input[type="text"], input[type="email"]');
+        textFields.forEach(field => {
+            field.classList.add('form-control', 'neon-form-control');
+        });
+        
+        const textareaFields = document.querySelectorAll('textarea');
+        textareaFields.forEach(field => {
+            field.classList.add('form-control', 'neon-form-control');
+            field.setAttribute('rows', '5');
+        });
+        
+        // Add animation to elements when they come into view
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.contact-form-item, .contact-info-item');
+            elements.forEach(element => {
+                const position = element.getBoundingClientRect();
+                if(position.top < window.innerHeight) {
+                    element.style.animationPlayState = 'running';
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Run once on page load
+    });
+</script>
+{% endblock %} 

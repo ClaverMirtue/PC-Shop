@@ -1,0 +1,420 @@
+{% extends 'pcapp/base.html' %}
+
+{% block title %}Your Cart - PC Hardware Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #6200ea;
+        --primary-light: #9d46ff;
+        --primary-dark: #0a00b6;
+        --accent-color: #00e5ff;
+        --success-color: #00c853;
+        --warning-color: #ffd600;
+        --danger-color: #ff3d00;
+        --dark-bg: #121212;
+        --card-bg: #1e1e1e;
+        --text-light: #ffffff;
+        --text-secondary: #b0b0b0;
+    }
+    
+    .cart-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 2rem 2rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cart-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+        animation: shine 3s infinite linear;
+        z-index: 1;
+    }
+    
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .cart-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .cart-subtitle {
+        font-weight: 300;
+        color: var(--accent-color);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .neon-card {
+        background-color: var(--card-bg);
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .neon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+        background-size: 200% 100%;
+        animation: gradientBorder 3s infinite linear;
+    }
+    
+    @keyframes gradientBorder {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 200% 0%; }
+    }
+    
+    .card-header-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        border-bottom: none;
+        padding: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .neon-btn {
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        border: none;
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+        z-index: -1;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    .neon-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-btn-primary:hover {
+        box-shadow: 0 8px 25px rgba(98, 0, 234, 0.5);
+        color: var(--text-light);
+    }
+    
+    .neon-btn-outline {
+        background: transparent;
+        color: var(--primary-light);
+        box-shadow: 0 0 0 2px var(--primary-light);
+    }
+    
+    .neon-btn-outline:hover {
+        background: rgba(98, 0, 234, 0.1);
+        box-shadow: 0 0 0 2px var(--primary-light), 0 0 20px rgba(98, 0, 234, 0.4);
+        color: var(--primary-light);
+    }
+    
+    .cart-item {
+        background-color: rgba(30, 30, 30, 0.7);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .cart-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .cart-item-image {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .cart-item:hover .cart-item-image {
+        transform: scale(1.05);
+    }
+    
+    .cart-item-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--text-light);
+    }
+    
+    .cart-item-price {
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+    
+    .cart-item-form {
+        display: flex;
+        align-items: center;
+    }
+    
+    .cart-quantity {
+        width: 60px;
+        padding: 0.375rem 0.75rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.25rem;
+        color: var(--text-light);
+        margin: 0 0.5rem;
+        text-align: center;
+    }
+    
+    .remove-btn {
+        color: var(--danger-color);
+        background: transparent;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .remove-btn:hover {
+        color: var(--text-light);
+        transform: scale(1.1);
+    }
+    
+    .cart-summary {
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s 0.2s forwards;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .summary-row.total {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 5rem 0;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .empty-cart-icon {
+        font-size: 5rem;
+        color: rgba(255, 255, 255, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .cart-item:nth-child(1) { animation-delay: 0.1s; }
+    .cart-item:nth-child(2) { animation-delay: 0.2s; }
+    .cart-item:nth-child(3) { animation-delay: 0.3s; }
+    .cart-item:nth-child(4) { animation-delay: 0.4s; }
+    .cart-item:nth-child(5) { animation-delay: 0.5s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 cart-title">Your Shopping Cart</h1>
+                {% if cart_items %}
+                    <p class="lead cart-subtitle">You have {{ cart.total_items }} item(s) in your cart</p>
+                {% else %}
+                    <p class="lead cart-subtitle">Your cart is currently empty</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    {% if cart_items %}
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="neon-card">
+                    <div class="card-header card-header-primary">
+                        <h3 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Cart Items</h3>
+                    </div>
+                    <div class="card-body">
+                        {% for item in cart_items %}
+                            <div class="cart-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2 col-sm-3 mb-3 mb-md-0 text-center">
+                                        {% if item.product.images.exists %}
+                                            <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" class="cart-item-image">
+                                        {% else %}
+                                            <div class="cart-item-image d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-desktop fa-2x text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-4 col-sm-9 mb-3 mb-md-0">
+                                        <h5 class="cart-item-title">{{ item.product.name }}</h5>
+                                        <p class="text-muted small mb-0">
+                                            {{ item.product.company.name }} | {{ item.product.category.name }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-2 col-sm-4 mb-3 mb-md-0 text-md-center">
+                                        <span class="cart-item-price">₹{{ item.product.price }}</span>
+                                    </div>
+                                    <div class="col-md-2 col-sm-4 mb-3 mb-md-0">
+                                        <form method="post" action="{% url 'update_cart' %}" class="cart-item-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="cart-quantity">
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-2 col-sm-4 text-md-end">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="cart-item-price d-md-none">₹{{ item.total_price }}</span>
+                                            <span class="cart-item-price d-none d-md-block">₹{{ item.total_price }}</span>
+                                            <form method="post" action="{% url 'remove_from_cart' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                                <button type="submit" class="remove-btn">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="neon-card cart-summary">
+                    <div class="card-header card-header-primary">
+                        <h3 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Summary</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span>₹{{ cart.total_price }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping:</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span>₹{{ cart.total_price }}</span>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <a href="{% url 'checkout' %}" class="neon-btn neon-btn-primary">
+                                <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                            </a>
+                            <a href="{% url 'home' %}" class="neon-btn neon-btn-outline">
+                                <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart empty-cart-icon"></i>
+            <h3 class="mb-4">Your Cart is Empty</h3>
+            <p class="mb-5">Looks like you haven't added any products to your cart yet.</p>
+            <a href="{% url 'home' %}" class="neon-btn neon-btn-primary">
+                <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to elements when they come into view
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.cart-item, .cart-summary, .empty-cart');
+            elements.forEach(element => {
+                const position = element.getBoundingClientRect();
+                if(position.top < window.innerHeight) {
+                    element.style.animationPlayState = 'running';
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Run once on page load
+    });
+</script>
+{% endblock %} 

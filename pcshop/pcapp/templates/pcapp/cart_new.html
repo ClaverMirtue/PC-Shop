@@ -1,0 +1,44 @@
+{% extends 'pcapp/base.html' %}
+
+{% block title %}Your Cart - PC Hardware Shop{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Your Shopping Cart</h1>
+    
+    {% if cart_items %}
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Cart Items ({{ cart.total_items }})</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>You have {{ cart.total_items }} item(s) in your cart.</p>
+                        <p>Total: ₹{{ cart.total_price }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Order Summary</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid">
+                            <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">Proceed to Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <h3>Your cart is empty</h3>
+                <p class="mb-4">Looks like you haven't added any products to your cart yet.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">Start Shopping</a>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %} 

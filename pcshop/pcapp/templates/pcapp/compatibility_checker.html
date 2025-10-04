@@ -1,0 +1,247 @@
+{% extends 'pcapp/base.html' %}
+
+{% block title %}PC Parts Compatibility Checker - PC Hardware Shop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 mb-4">PC Parts Compatibility Checker</h1>
+            <p class="lead">Check if your PC components will work together before making a purchase.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Select Your Components</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="compatibilityForm">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.processor.id_for_label }}" class="form-label">Processor (CPU)</label>
+                            {{ form.processor }}
+                            {% if form.processor.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.processor.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select the processor you want to use in your build.</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.motherboard.id_for_label }}" class="form-label">Motherboard</label>
+                            {{ form.motherboard }}
+                            {% if form.motherboard.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.motherboard.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select a motherboard compatible with your processor.</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.memory.id_for_label }}" class="form-label">Memory (RAM)</label>
+                            {{ form.memory }}
+                            {% if form.memory.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.memory.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select the RAM you want to use.</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.graphics_card.id_for_label }}" class="form-label">Graphics Card (GPU)</label>
+                            {{ form.graphics_card }}
+                            {% if form.graphics_card.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.graphics_card.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select a graphics card for your build (optional).</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.storage.id_for_label }}" class="form-label">Storage</label>
+                            {{ form.storage }}
+                            {% if form.storage.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.storage.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select your storage device (HDD/SSD).</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.power_supply.id_for_label }}" class="form-label">Power Supply (PSU)</label>
+                            {{ form.power_supply }}
+                            {% if form.power_supply.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.power_supply.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select a power supply unit for your build.</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.case.id_for_label }}" class="form-label">Computer Case</label>
+                            {{ form.case }}
+                            {% if form.case.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.case.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select a case that fits your components.</div>
+                        </div>
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary">Check Compatibility</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            {% if results %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header {% if is_compatible %}bg-success{% else %}bg-danger{% endif %} text-white">
+                        <h4 class="mb-0">
+                            {% if is_compatible %}
+                                <i class="fas fa-check-circle me-2"></i>Compatible Build
+                            {% else %}
+                                <i class="fas fa-exclamation-triangle me-2"></i>Compatibility Issues Detected
+                            {% endif %}
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        {% if is_compatible %}
+                            <div class="alert alert-success">
+                                <p><strong>Good news!</strong> All your selected components are compatible with each other.</p>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger">
+                                <p><strong>Warning!</strong> We've detected some compatibility issues with your selected components:</p>
+                                <ul>
+                                    {% for issue in compatibility_issues %}
+                                        <li>{{ issue }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        
+                        <h5 class="mt-4">Component Details</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Selected Item</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for component, details in results.items %}
+                                        <tr>
+                                            <td>{{ component|title }}</td>
+                                            <td>{{ details.name }}</td>
+                                            <td>
+                                                {% if details.compatible %}
+                                                    <span class="text-success"><i class="fas fa-check-circle me-1"></i>Compatible</span>
+                                                {% else %}
+                                                    <span class="text-danger"><i class="fas fa-times-circle me-1"></i>Issue</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        {% if is_compatible %}
+                            <div class="mt-4">
+                                <h5>Estimated Power Consumption: {{ power_consumption }}W</h5>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ power_percentage }}%;" aria-valuenow="{{ power_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ power_percentage }}%</div>
+                                </div>
+                                <p class="form-text">This is an estimate of how much power your system will consume under load. Make sure your PSU can handle this with some headroom (recommended: at least 30% more).</p>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="#" class="btn btn-outline-primary">Save Build</a>
+                                <a href="#" class="btn btn-primary">Add All to Cart</a>
+                            </div>
+                        {% else %}
+                            <div class="mt-4">
+                                <h5>Recommendations</h5>
+                                <ul>
+                                    {% for recommendation in recommendations %}
+                                        <li>{{ recommendation }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Compatibility Guide</h4>
+                </div>
+                <div class="card-body">
+                    <h5>What We Check</h5>
+                    <ul>
+                        <li><strong>CPU and Motherboard:</strong> Socket compatibility, chipset support</li>
+                        <li><strong>RAM and Motherboard:</strong> Memory type, speed, and capacity support</li>
+                        <li><strong>GPU and Motherboard:</strong> PCIe slot compatibility</li>
+                        <li><strong>Storage and Motherboard:</strong> SATA/M.2/NVMe support</li>
+                        <li><strong>Case and Motherboard:</strong> Form factor compatibility</li>
+                        <li><strong>Power Supply:</strong> Sufficient wattage for all components</li>
+                    </ul>
+                    
+                    <h5 class="mt-4">Need Help?</h5>
+                    <p>If you're unsure about which components to choose or have questions about compatibility, our experts are here to help!</p>
+                    <a href="{% url 'contact_us' %}" class="btn btn-outline-primary">Contact Our Experts</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add Bootstrap classes to form fields
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectFields = document.querySelectorAll('select');
+        selectFields.forEach(field => {
+            field.classList.add('form-select');
+        });
+    });
+</script>
+{% endblock %} 

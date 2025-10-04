@@ -1,0 +1,630 @@
+{% extends 'pcapp/base.html' %}
+
+{% block title %}Checkout - PC Hardware Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #6200ea;
+        --primary-light: #9d46ff;
+        --primary-dark: #0a00b6;
+        --accent-color: #00e5ff;
+        --success-color: #00c853;
+        --warning-color: #ffd600;
+        --danger-color: #ff3d00;
+        --dark-bg: #121212;
+        --card-bg: #1e1e1e;
+        --text-light: #ffffff;
+        --text-secondary: #b0b0b0;
+    }
+    
+    .checkout-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 2rem 2rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .checkout-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+        animation: shine 3s infinite linear;
+        z-index: 1;
+    }
+    
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .checkout-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .checkout-subtitle {
+        font-weight: 300;
+        color: var(--accent-color);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .neon-card {
+        background-color: var(--card-bg);
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .neon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+        background-size: 200% 100%;
+        animation: gradientBorder 3s infinite linear;
+    }
+    
+    @keyframes gradientBorder {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 200% 0%; }
+    }
+    
+    .card-header-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        border-bottom: none;
+        padding: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .neon-form-control {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.5rem;
+        color: var(--text-light);
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .neon-form-control:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 0.25rem rgba(98, 0, 234, 0.25);
+        color: var(--text-light);
+    }
+    
+    .neon-form-label {
+        color: var(--primary-light);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .neon-form-select {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.5rem;
+        color: var(--text-light);
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    }
+    
+    .neon-form-select:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 0.25rem rgba(98, 0, 234, 0.25);
+        color: var(--text-light);
+    }
+    
+    .neon-btn {
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        border: none;
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+        z-index: -1;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    .neon-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-btn-primary:hover {
+        box-shadow: 0 8px 25px rgba(98, 0, 234, 0.5);
+        color: var(--text-light);
+    }
+    
+    .neon-btn-outline {
+        background: transparent;
+        color: var(--primary-light);
+        box-shadow: 0 0 0 2px var(--primary-light);
+    }
+    
+    .neon-btn-outline:hover {
+        background: rgba(98, 0, 234, 0.1);
+        box-shadow: 0 0 0 2px var(--primary-light), 0 0 20px rgba(98, 0, 234, 0.4);
+        color: var(--primary-light);
+    }
+    
+    .breadcrumb {
+        background-color: rgba(30, 30, 30, 0.7);
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--accent-color);
+    }
+    
+    .breadcrumb-item.active {
+        color: var(--text-light);
+    }
+    
+    .breadcrumb-item a {
+        color: var(--primary-light);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .breadcrumb-item a:hover {
+        color: var(--accent-color);
+    }
+    
+    .form-section {
+        background-color: rgba(30, 30, 30, 0.7);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 3px solid var(--primary-color);
+        transition: all 0.3s ease;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .form-section:hover {
+        border-left-color: var(--accent-color);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .form-section-title {
+        color: var(--primary-light);
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-section-title i {
+        margin-right: 0.75rem;
+        color: var(--accent-color);
+    }
+    
+    .order-item {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .order-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .order-item-name {
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--text-light);
+    }
+    
+    .order-item-details {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+    
+    .order-item-price {
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .summary-row.total {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .empty-alert {
+        text-align: center;
+        padding: 4rem 2rem;
+        border-radius: 1rem;
+        background-color: rgba(30, 30, 30, 0.7);
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .payment-method-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .payment-method-radio {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        margin-right: 0.75rem;
+        cursor: pointer;
+    }
+    
+    .payment-method-label {
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        color: var(--text-light);
+    }
+    
+    .payment-icon {
+        margin-left: 0.5rem;
+        font-size: 1.25rem;
+        color: var(--accent-color);
+    }
+    
+    .form-section:nth-child(1) { animation-delay: 0.1s; }
+    .form-section:nth-child(2) { animation-delay: 0.2s; }
+    .form-section:nth-child(3) { animation-delay: 0.3s; }
+    .form-section:nth-child(4) { animation-delay: 0.4s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 checkout-title">Checkout</h1>
+                <p class="lead checkout-subtitle">Complete your purchase</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'cart_view' %}">Cart</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+            </ol>
+        </nav>
+    </div>
+
+    {% if cart_items %}
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="neon-card">
+                    <div class="card-header card-header-primary">
+                        <h3 class="mb-0"><i class="fas fa-shipping-fast me-2"></i>Shipping & Payment Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="form-section">
+                                <h5 class="form-section-title"><i class="fas fa-user-circle"></i>Contact Information</h5>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <label for="{{ form.full_name.id_for_label }}" class="neon-form-label">Full Name</label>
+                                        {{ form.full_name }}
+                                        {% if form.full_name.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.full_name.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.email.id_for_label }}" class="neon-form-label">Email</label>
+                                        {{ form.email }}
+                                        {% if form.email.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.email.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.phone.id_for_label }}" class="neon-form-label">Phone Number</label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.phone.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h5 class="form-section-title"><i class="fas fa-map-marker-alt"></i>Shipping Address</h5>
+                                <div class="mb-3">
+                                    <label for="{{ form.address.id_for_label }}" class="neon-form-label">Address</label>
+                                    {{ form.address }}
+                                    {% if form.address.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.address.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-4 mb-3 mb-md-0">
+                                        <label for="{{ form.city.id_for_label }}" class="neon-form-label">City</label>
+                                        {{ form.city }}
+                                        {% if form.city.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.city.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-4 mb-3 mb-md-0">
+                                        <label for="{{ form.state.id_for_label }}" class="neon-form-label">State</label>
+                                        {{ form.state }}
+                                        {% if form.state.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.state.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="{{ form.pincode.id_for_label }}" class="neon-form-label">PIN Code</label>
+                                        {{ form.pincode }}
+                                        {% if form.pincode.errors %}
+                                            <div class="text-danger">
+                                                {% for error in form.pincode.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h5 class="form-section-title"><i class="fas fa-credit-card"></i>Payment Method</h5>
+                                <div class="mb-3">
+                                    <div class="payment-methods">
+                                        {{ form.payment_method }}
+                                    </div>
+                                    {% if form.payment_method.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.payment_method.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="neon-btn neon-btn-primary">
+                                    <i class="fas fa-check-circle me-2"></i>Place Order
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="neon-card">
+                    <div class="card-header card-header-primary">
+                        <h3 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Summary</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h5 class="text-light mb-3">Items ({{ cart.total_items }})</h5>
+                            {% for item in cart_items %}
+                                <div class="order-item">
+                                    <div>
+                                        <h6 class="order-item-name">{{ item.product.name }}</h6>
+                                        <small class="order-item-details">Quantity: {{ item.quantity }}</small>
+                                    </div>
+                                    <span class="order-item-price">₹{{ item.total_price }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <strong>₹{{ cart.total_price }}</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <strong>Free</strong>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <strong>₹{{ cart.total_price }}</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="neon-card">
+                    <div class="card-header card-header-primary">
+                        <h3 class="mb-0"><i class="fas fa-question-circle me-2"></i>Need Help?</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>If you have any questions about your order, feel free to contact our customer support.</p>
+                        <a href="{% url 'contact_us' %}" class="neon-btn neon-btn-outline w-100">
+                            <i class="fas fa-envelope me-2"></i>Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-alert">
+            <div class="text-center">
+                <i class="fas fa-shopping-cart mb-4" style="font-size: 4rem; color: var(--text-secondary);"></i>
+                <h3 class="text-light mb-3">Your cart is empty</h3>
+                <p class="mb-4">Please add some products to your cart before proceeding to checkout.</p>
+                <a href="{% url 'home' %}" class="neon-btn neon-btn-primary">
+                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add custom classes to form fields
+        const textFields = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea');
+        textFields.forEach(field => {
+            field.classList.add('form-control', 'neon-form-control');
+        });
+        
+        const selectFields = document.querySelectorAll('select');
+        selectFields.forEach(field => {
+            field.classList.add('form-select', 'neon-form-select');
+        });
+        
+        // Style the payment method radios
+        const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+        paymentRadios.forEach(radio => {
+            const label = document.querySelector(`label[for="${radio.id}"]`);
+            if (label) {
+                const container = document.createElement('div');
+                container.className = 'payment-method-item';
+                
+                radio.className = 'payment-method-radio';
+                label.className = 'payment-method-label';
+                
+                // Add payment icons
+                if (label.textContent.includes('Credit') || label.textContent.includes('Debit')) {
+                    label.innerHTML += '<i class="fab fa-cc-visa payment-icon"></i><i class="fab fa-cc-mastercard payment-icon"></i>';
+                } else if (label.textContent.includes('UPI')) {
+                    label.innerHTML += '<i class="fas fa-mobile-alt payment-icon"></i>';
+                } else if (label.textContent.includes('Net Banking')) {
+                    label.innerHTML += '<i class="fas fa-university payment-icon"></i>';
+                } else if (label.textContent.includes('Cash')) {
+                    label.innerHTML += '<i class="fas fa-money-bill-wave payment-icon"></i>';
+                }
+                
+                // Wrap in custom container
+                radio.parentNode.insertBefore(container, radio);
+                container.appendChild(radio);
+                container.appendChild(label);
+            }
+        });
+        
+        // Add animation to elements when they come into view
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.form-section, .empty-alert');
+            elements.forEach(element => {
+                const position = element.getBoundingClientRect();
+                if(position.top < window.innerHeight) {
+                    element.style.animationPlayState = 'running';
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Run once on page load
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,362 @@
+{% extends 'pcapp/base.html' %}
+
+{% block title %}Order History - PC Hardware Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #6200ea;
+        --primary-light: #9d46ff;
+        --primary-dark: #0a00b6;
+        --accent-color: #00e5ff;
+        --success-color: #00c853;
+        --warning-color: #ffd600;
+        --danger-color: #ff3d00;
+        --dark-bg: #121212;
+        --card-bg: #1e1e1e;
+        --text-light: #ffffff;
+        --text-secondary: #b0b0b0;
+    }
+    
+    .history-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 2rem 2rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .history-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+        animation: shine 3s infinite linear;
+        z-index: 1;
+    }
+    
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .history-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .history-subtitle {
+        font-weight: 300;
+        color: var(--accent-color);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .neon-card {
+        background-color: var(--card-bg);
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+        position: relative;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .neon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+        background-size: 200% 100%;
+        animation: gradientBorder 3s infinite linear;
+    }
+    
+    @keyframes gradientBorder {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 200% 0%; }
+    }
+    
+    .card-header-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        border-bottom: none;
+        padding: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .neon-btn {
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        border: none;
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+        z-index: -1;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    .neon-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-btn-primary:hover {
+        box-shadow: 0 8px 25px rgba(98, 0, 234, 0.5);
+        color: var(--text-light);
+    }
+    
+    .neon-btn-outline {
+        background: transparent;
+        color: var(--primary-light);
+        box-shadow: 0 0 0 2px var(--primary-light);
+    }
+    
+    .neon-btn-outline:hover {
+        background: rgba(98, 0, 234, 0.1);
+        box-shadow: 0 0 0 2px var(--primary-light), 0 0 20px rgba(98, 0, 234, 0.4);
+        color: var(--primary-light);
+    }
+    
+    .neon-btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .order-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .order-table thead th {
+        color: var(--primary-light);
+        font-weight: 600;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.875rem;
+    }
+    
+    .order-table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-light);
+        vertical-align: middle;
+    }
+    
+    .order-table tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .order-table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-block;
+    }
+    
+    .status-pending {
+        background-color: rgba(255, 214, 0, 0.15);
+        color: var(--warning-color);
+        border: 1px solid rgba(255, 214, 0, 0.3);
+    }
+    
+    .status-processing {
+        background-color: rgba(0, 229, 255, 0.15);
+        color: var(--accent-color);
+        border: 1px solid rgba(0, 229, 255, 0.3);
+    }
+    
+    .status-shipped {
+        background-color: rgba(98, 0, 234, 0.15);
+        color: var(--primary-light);
+        border: 1px solid rgba(98, 0, 234, 0.3);
+    }
+    
+    .status-delivered {
+        background-color: rgba(0, 200, 83, 0.15);
+        color: var(--success-color);
+        border: 1px solid rgba(0, 200, 83, 0.3);
+    }
+    
+    .status-cancelled {
+        background-color: rgba(255, 61, 0, 0.15);
+        color: var(--danger-color);
+        border: 1px solid rgba(255, 61, 0, 0.3);
+    }
+    
+    .order-id {
+        font-weight: 700;
+        color: var(--primary-light);
+    }
+    
+    .order-price {
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+    
+    .empty-orders {
+        text-align: center;
+        padding: 5rem 2rem;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        color: rgba(255, 255, 255, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="history-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 history-title">Order History</h1>
+                <p class="lead history-subtitle">View and track all your orders</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    {% if orders %}
+        <div class="neon-card">
+            <div class="card-header card-header-primary">
+                <h3 class="mb-0"><i class="fas fa-history me-2"></i>Your Orders</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td><span class="order-id">#{{ order.id }}</span></td>
+                                    <td>{{ order.created_at|date:"F j, Y, g:i a" }}</td>
+                                    <td><span class="order-price">₹{{ order.total_price }}</span></td>
+                                    <td>
+                                        {% if order.order_status == 'pending' %}
+                                            <span class="status-badge status-pending">Pending</span>
+                                        {% elif order.order_status == 'processing' %}
+                                            <span class="status-badge status-processing">Processing</span>
+                                        {% elif order.order_status == 'shipped' %}
+                                            <span class="status-badge status-shipped">Shipped</span>
+                                        {% elif order.order_status == 'delivered' %}
+                                            <span class="status-badge status-delivered">Delivered</span>
+                                        {% elif order.order_status == 'cancelled' %}
+                                            <span class="status-badge status-cancelled">Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'order_detail' order.id %}" class="neon-btn neon-btn-outline neon-btn-sm">
+                                            <i class="fas fa-eye me-1"></i>View Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="neon-card">
+            <div class="empty-orders">
+                <i class="fas fa-shopping-bag empty-icon"></i>
+                <h3 class="mb-3">No Orders Yet</h3>
+                <p class="mb-4">You haven't placed any orders yet. Start shopping to see your orders here.</p>
+                <a href="{% url 'home' %}" class="neon-btn neon-btn-primary">
+                    <i class="fas fa-shopping-cart me-2"></i>Start Shopping
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to elements when they come into view
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.neon-card');
+            elements.forEach(element => {
+                const position = element.getBoundingClientRect();
+                if(position.top < window.innerHeight) {
+                    element.style.animationPlayState = 'running';
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Run once on page load
+    });
+</script>
+{% endblock %} 

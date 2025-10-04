@@ -1,0 +1,467 @@
+{% extends 'pcapp/base.html' %}
+
+{% block title %}Order #{{ order.id }} - PC Hardware Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #6200ea;
+        --primary-light: #9d46ff;
+        --primary-dark: #0a00b6;
+        --accent-color: #00e5ff;
+        --success-color: #00c853;
+        --warning-color: #ffd600;
+        --danger-color: #ff3d00;
+        --dark-bg: #121212;
+        --card-bg: #1e1e1e;
+        --text-light: #ffffff;
+        --text-secondary: #b0b0b0;
+    }
+    
+    .order-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 2rem 2rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .order-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+        animation: shine 3s infinite linear;
+        z-index: 1;
+    }
+    
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .order-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .order-subtitle {
+        font-weight: 300;
+        color: var(--accent-color);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .neon-card {
+        background-color: var(--card-bg);
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+        position: relative;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .neon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+        background-size: 200% 100%;
+        animation: gradientBorder 3s infinite linear;
+    }
+    
+    @keyframes gradientBorder {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 200% 0%; }
+    }
+    
+    .card-header-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        border-bottom: none;
+        padding: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .neon-btn {
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        border: none;
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+        z-index: -1;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    .neon-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-btn-primary:hover {
+        box-shadow: 0 8px 25px rgba(98, 0, 234, 0.5);
+        color: var(--text-light);
+    }
+    
+    .neon-btn-outline {
+        background: transparent;
+        color: var(--primary-light);
+        box-shadow: 0 0 0 2px var(--primary-light);
+    }
+    
+    .neon-btn-outline:hover {
+        background: rgba(98, 0, 234, 0.1);
+        box-shadow: 0 0 0 2px var(--primary-light), 0 0 20px rgba(98, 0, 234, 0.4);
+        color: var(--primary-light);
+    }
+    
+    .breadcrumb {
+        background-color: rgba(30, 30, 30, 0.7);
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--accent-color);
+    }
+    
+    .breadcrumb-item.active {
+        color: var(--text-light);
+    }
+    
+    .breadcrumb-item a {
+        color: var(--primary-light);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .breadcrumb-item a:hover {
+        color: var(--accent-color);
+    }
+    
+    .order-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .order-table th {
+        color: var(--primary-light);
+        font-weight: 600;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        text-align: left;
+    }
+    
+    .order-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-light);
+    }
+    
+    .order-table tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .order-table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .order-table tfoot th {
+        color: var(--accent-color);
+        font-weight: 700;
+    }
+    
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-block;
+    }
+    
+    .status-pending {
+        background-color: rgba(255, 214, 0, 0.15);
+        color: var(--warning-color);
+        border: 1px solid rgba(255, 214, 0, 0.3);
+    }
+    
+    .status-processing {
+        background-color: rgba(0, 229, 255, 0.15);
+        color: var(--accent-color);
+        border: 1px solid rgba(0, 229, 255, 0.3);
+    }
+    
+    .status-shipped {
+        background-color: rgba(98, 0, 234, 0.15);
+        color: var(--primary-light);
+        border: 1px solid rgba(98, 0, 234, 0.3);
+    }
+    
+    .status-delivered {
+        background-color: rgba(0, 200, 83, 0.15);
+        color: var(--success-color);
+        border: 1px solid rgba(0, 200, 83, 0.3);
+    }
+    
+    .status-cancelled {
+        background-color: rgba(255, 61, 0, 0.15);
+        color: var(--danger-color);
+        border: 1px solid rgba(255, 61, 0, 0.3);
+    }
+    
+    .info-item {
+        display: flex;
+        margin-bottom: 1rem;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: var(--primary-light);
+        width: 120px;
+        min-width: 120px;
+    }
+    
+    .info-value {
+        color: var(--text-light);
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .neon-card:nth-child(1) { animation-delay: 0.1s; }
+    .neon-card:nth-child(2) { animation-delay: 0.2s; }
+    .neon-card:nth-child(3) { animation-delay: 0.3s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="order-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 order-title">Order #{{ order.id }}</h1>
+                <p class="lead order-subtitle">{{ order.created_at|date:"F j, Y" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'order_history' %}">Order History</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Order #{{ order.id }}</li>
+            </ol>
+        </nav>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="neon-card">
+                <div class="card-header card-header-primary">
+                    <h3 class="mb-0"><i class="fas fa-box-open me-2"></i>Order Items</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="order-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50%;">Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                    <tr>
+                                        <td>{{ item.product.name }}</td>
+                                        <td>₹{{ item.price }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td class="text-end">₹{{ item.total_price }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="text-end">Total:</th>
+                                    <th class="text-end">₹{{ order.total_price }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="neon-card">
+                <div class="card-header card-header-primary">
+                    <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Order Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <div class="info-label">Order Date:</div>
+                        <div class="info-value">{{ order.created_at|date:"F j, Y, g:i a" }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Status:</div>
+                        <div class="info-value">
+                            {% if order.order_status == 'pending' %}
+                                <span class="status-badge status-pending">Pending</span>
+                            {% elif order.order_status == 'processing' %}
+                                <span class="status-badge status-processing">Processing</span>
+                            {% elif order.order_status == 'shipped' %}
+                                <span class="status-badge status-shipped">Shipped</span>
+                            {% elif order.order_status == 'delivered' %}
+                                <span class="status-badge status-delivered">Delivered</span>
+                            {% elif order.order_status == 'cancelled' %}
+                                <span class="status-badge status-cancelled">Cancelled</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Payment:</div>
+                        <div class="info-value">{{ order.get_payment_method_display }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Payment Status:</div>
+                        <div class="info-value">
+                            {% if order.payment_status %}
+                                <span class="status-badge status-delivered">Paid</span>
+                            {% else %}
+                                <span class="status-badge status-pending">Pending</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="neon-card">
+                <div class="card-header card-header-primary">
+                    <h3 class="mb-0"><i class="fas fa-shipping-fast me-2"></i>Shipping Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <div class="info-label">Name:</div>
+                        <div class="info-value">{{ order.full_name }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Email:</div>
+                        <div class="info-value">{{ order.email }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Phone:</div>
+                        <div class="info-value">{{ order.phone }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Address:</div>
+                        <div class="info-value">{{ order.address }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">City:</div>
+                        <div class="info-value">{{ order.city }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">State:</div>
+                        <div class="info-value">{{ order.state }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">PIN Code:</div>
+                        <div class="info-value">{{ order.pincode }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{% url 'order_history' %}" class="neon-btn neon-btn-outline">
+            <i class="fas fa-arrow-left me-2"></i>Back to Order History
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to elements when they come into view
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.neon-card');
+            elements.forEach(element => {
+                const position = element.getBoundingClientRect();
+                if(position.top < window.innerHeight) {
+                    element.style.animationPlayState = 'running';
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Run once on page load
+    });
+</script>
+{% endblock %} 

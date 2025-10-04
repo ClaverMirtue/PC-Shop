@@ -1,0 +1,717 @@
+{% extends 'pcapp/base.html' %}
+
+{% block title %}About Us - PC Hardware Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #6200ea;
+        --primary-light: #9d46ff;
+        --primary-dark: #0a00b6;
+        --accent-color: #00e5ff;
+        --success-color: #00c853;
+        --warning-color: #ffd600;
+        --danger-color: #ff3d00;
+        --dark-bg: #121212;
+        --card-bg: #1e1e1e;
+        --text-light: #ffffff;
+        --text-secondary: #b0b0b0;
+    }
+    
+    .about-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 2rem 2rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .about-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+        animation: shine 3s infinite linear;
+        z-index: 1;
+    }
+    
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .about-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .about-subtitle {
+        font-weight: 300;
+        color: var(--accent-color);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .story-section {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .story-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(98, 0, 234, 0.1) 0%, rgba(98, 0, 234, 0) 70%);
+        z-index: -1;
+        border-radius: 50%;
+    }
+    
+    .neon-card {
+        background-color: var(--card-bg);
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .neon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+        background-size: 200% 100%;
+        animation: gradientBorder 3s infinite linear;
+    }
+    
+    @keyframes gradientBorder {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 200% 0%; }
+    }
+    
+    .card-header-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        border-bottom: none;
+        padding: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .value-card {
+        background-color: rgba(30, 30, 30, 0.7);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .value-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(98, 0, 234, 0.2);
+    }
+    
+    .value-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(98, 0, 234, 0.1) 0%, rgba(0, 229, 255, 0.1) 100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .value-card:hover::before {
+        opacity: 1;
+    }
+    
+    .value-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 20px rgba(98, 0, 234, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .value-card:hover .value-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .value-icon i {
+        font-size: 2rem;
+        color: var(--text-light);
+    }
+    
+    .value-title {
+        font-weight: 700;
+        color: var(--primary-light);
+        margin-bottom: 0.75rem;
+        position: relative;
+    }
+    
+    .value-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background: var(--accent-color);
+        transition: all 0.3s ease;
+    }
+    
+    .value-card:hover .value-title::after {
+        width: 60px;
+    }
+    
+    .team-member {
+        background-color: rgba(30, 30, 30, 0.7);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .team-member:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(98, 0, 234, 0.2);
+    }
+    
+    .team-member::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(98, 0, 234, 0.1) 0%, rgba(0, 229, 255, 0.1) 100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .team-member:hover::before {
+        opacity: 1;
+    }
+    
+    .team-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        position: relative;
+        border: 3px solid var(--primary-color);
+        padding: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .team-avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .team-member:hover .team-avatar {
+        transform: scale(1.05);
+        border-color: var(--accent-color);
+    }
+    
+    .team-name {
+        font-weight: 700;
+        color: var(--primary-light);
+        margin-bottom: 0.25rem;
+    }
+    
+    .team-position {
+        color: var(--accent-color);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .team-bio {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .social-link {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .social-link:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(98, 0, 234, 0.4);
+        color: var(--text-light);
+    }
+    
+    .map-container {
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+    
+    .map-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid transparent;
+        border-radius: 1rem;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color)) border-box;
+        -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        animation: gradientBorder 3s infinite linear;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    .store-info {
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .neon-btn {
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        border: none;
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+        z-index: -1;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    .neon-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .neon-btn-primary:hover {
+        box-shadow: 0 8px 25px rgba(98, 0, 234, 0.5);
+        color: var(--text-light);
+    }
+    
+    .timeline {
+        position: relative;
+        padding: 2rem 0;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 3rem;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+    
+    .timeline-content {
+        position: relative;
+        width: calc(50% - 30px);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        background: rgba(30, 30, 30, 0.7);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .timeline-content:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(98, 0, 234, 0.2);
+    }
+    
+    .timeline-content::after {
+        content: '';
+        position: absolute;
+        top: 20px;
+        width: 30px;
+        height: 2px;
+        background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+    }
+    
+    .timeline-date {
+        position: absolute;
+        top: 0;
+        width: 80px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: var(--text-light);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        box-shadow: 0 5px 15px rgba(98, 0, 234, 0.4);
+        z-index: 1;
+    }
+    
+    .timeline-left {
+        left: 0;
+    }
+    
+    .timeline-left .timeline-content {
+        margin-right: auto;
+    }
+    
+    .timeline-left .timeline-content::after {
+        right: -30px;
+    }
+    
+    .timeline-left .timeline-date {
+        right: -40px;
+    }
+    
+    .timeline-right {
+        right: 0;
+    }
+    
+    .timeline-right .timeline-content {
+        margin-left: auto;
+    }
+    
+    .timeline-right .timeline-content::after {
+        left: -30px;
+    }
+    
+    .timeline-right .timeline-date {
+        left: -40px;
+    }
+    
+    .section-title {
+        position: relative;
+        display: inline-block;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: var(--primary-light);
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--accent-color);
+        transition: all 0.3s ease;
+    }
+    
+    .section-title:hover::after {
+        width: 100px;
+    }
+    
+    @keyframes fadeInUp {
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .value-card:nth-child(1) { animation-delay: 0.1s; }
+    .value-card:nth-child(2) { animation-delay: 0.2s; }
+    .value-card:nth-child(3) { animation-delay: 0.3s; }
+    
+    .team-member:nth-child(1) { animation-delay: 0.1s; }
+    .team-member:nth-child(2) { animation-delay: 0.2s; }
+    .team-member:nth-child(3) { animation-delay: 0.3s; }
+    
+    .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 about-title">Our Story</h1>
+                <p class="lead about-subtitle">Building the future of PC Hardware since 2010</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Our Story Section -->
+    <div class="row mb-5 story-section">
+        <div class="col-lg-10 mx-auto">
+            <div class="neon-card">
+                <div class="card-header card-header-primary">
+                    <h3 class="mb-0"><i class="fas fa-book me-2"></i>Our Journey</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead mb-4">PC Hardware Shop was founded in 2010 with a simple mission: to provide high-quality computer hardware and exceptional service to tech enthusiasts, gamers, and professionals.</p>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item timeline-left">
+                            <div class="timeline-content">
+                                <div class="timeline-date">2010</div>
+                                <h4>The Beginning</h4>
+                                <p>Started as a small shop in Noida with just two employees and a passion for technology.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item timeline-right">
+                            <div class="timeline-content">
+                                <div class="timeline-date">2015</div>
+                                <h4>Expansion</h4>
+                                <p>Expanded to three physical locations across NCR and launched our online store to serve customers nationwide.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item timeline-left">
+                            <div class="timeline-content">
+                                <div class="timeline-date">2020</div>
+                                <h4>Today</h4>
+                                <p>Now a leading PC hardware retailer with over 50 employees, serving thousands of satisfied customers across India.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Our Values Section -->
+    <div class="row mb-5">
+        <div class="col-lg-12 text-center mb-4">
+            <h2 class="section-title">Our Core Values</h2>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h4 class="value-title">Quality</h4>
+                <p>We personally test and select each product to ensure it meets our high standards. We only sell hardware that we would use ourselves.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h4 class="value-title">Trust</h4>
+                <p>We build long-term relationships with our customers based on honesty, transparency, and reliability in every transaction.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h4 class="value-title">Service</h4>
+                <p>Our knowledgeable team provides personalized service and technical advice to help you make informed decisions about your hardware needs.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Our Team Section -->
+    <div class="row mb-5">
+        <div class="col-lg-12 text-center mb-4">
+            <h2 class="section-title">Meet Our Team</h2>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="team-member">
+                <div class="team-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Rajesh Sharma">
+                </div>
+                <h4 class="team-name">Rajesh Sharma</h4>
+                <div class="team-position">Founder & CEO</div>
+                <p class="team-bio">With over 20 years of experience in the tech industry, Rajesh leads our company with vision and passion for cutting-edge hardware.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="team-member">
+                <div class="team-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Priya Verma">
+                </div>
+                <h4 class="team-name">Priya Verma</h4>
+                <div class="team-position">Technical Director</div>
+                <p class="team-bio">Priya is our hardware expert who oversees product selection and quality testing to ensure we offer only the best components.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="team-member">
+                <div class="team-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Vikram Singh">
+                </div>
+                <h4 class="team-name">Vikram Singh</h4>
+                <div class="team-position">Customer Support Manager</div>
+                <p class="team-bio">Vikram leads our support team, ensuring that every customer receives exceptional service before, during, and after their purchase.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Visit Us Section -->
+    <div class="row">
+        <div class="col-lg-12 text-center mb-4">
+            <h2 class="section-title">Visit Our Store</h2>
+        </div>
+        
+        <div class="col-md-6 mb-4 store-info">
+            <div class="neon-card">
+                <div class="card-header card-header-primary">
+                    <h4 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Find Us</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="mb-3">PC Hardware Shop - Flagship Store</h5>
+                    <address class="mb-4">
+                        <p><i class="fas fa-map-pin me-2"></i>123 Tech Street, Sector 18<br>Noida, Uttar Pradesh 201301</p>
+                        <p><i class="fas fa-phone me-2"></i>+91 98765 43210</p>
+                        <p><i class="fas fa-envelope me-2"></i>info@pchardwareshop.com</p>
+                        <p><i class="fas fa-clock me-2"></i>Monday - Saturday: 10:00 AM - 8:00 PM<br>Sunday: Closed</p>
+                    </address>
+                    <a href="{% url 'contact_us' %}" class="neon-btn neon-btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="map-container">
+                <div class="ratio ratio-1x1">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.5141501920523!2d77.32371491508346!3d28.618895982423885!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce5366c3d1d19%3A0x71f0e610c441b093!2sSector%2018%2C%20Noida%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1615276000000!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to elements when they come into view
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.value-card, .team-member, .timeline-item, .store-info');
+            elements.forEach(element => {
+                const position = element.getBoundingClientRect();
+                if(position.top < window.innerHeight) {
+                    element.style.animationPlayState = 'running';
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // Run once on page load
+    });
+</script>
+{% endblock %} 

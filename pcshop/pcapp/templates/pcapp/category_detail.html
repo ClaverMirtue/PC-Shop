@@ -1,0 +1,332 @@
+{% extends 'pcapp/base.html' %}
+
+{% block title %}{{ category.name }} - PC Hardware Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        border-radius: 1rem;
+        padding: 2.5rem 2rem;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .category-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+        animation: shine 3s infinite linear;
+        z-index: 1;
+    }
+    
+    @keyframes shine {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    .category-header h1 {
+        color: var(--text-light);
+        margin-bottom: 1rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 2;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .category-header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 2;
+        margin-bottom: 0;
+    }
+    
+    .category-header img {
+        position: relative;
+        z-index: 2;
+        border-radius: 0.8rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        max-height: 180px;
+        object-fit: contain;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+    }
+    
+    .breadcrumb {
+        background-color: transparent;
+        padding: 1rem 0;
+    }
+    
+    .breadcrumb-item a {
+        color: var(--primary-light);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    .breadcrumb-item a:hover {
+        color: var(--secondary-color);
+    }
+    
+    .breadcrumb-item.active {
+        color: var(--text-secondary);
+    }
+    
+    .breadcrumb-item+.breadcrumb-item::before {
+        color: var(--text-secondary);
+    }
+    
+    .section-title {
+        position: relative;
+        color: var(--primary-light);
+        font-weight: 700;
+        margin-bottom: 2.5rem;
+        text-align: center;
+        padding-bottom: 1.5rem;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        border-radius: 3px;
+    }
+    
+    .company-card {
+        background: var(--card-bg);
+        border: none;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+        height: 100%;
+        position: relative;
+    }
+    
+    .company-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--primary-color));
+        background-size: 200% 100%;
+        animation: gradientBorder 3s infinite linear;
+    }
+    
+    .company-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .company-card .card-img-top {
+        height: 160px;
+        object-fit: contain;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        transition: var(--transition);
+    }
+    
+    .company-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .company-card .no-logo {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.08) 100%);
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .company-card .no-logo h3 {
+        color: var(--primary-light);
+        text-align: center;
+        margin: 0;
+        padding: 0 1rem;
+        font-size: 1.3rem;
+    }
+    
+    .company-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .company-card .card-title {
+        color: var(--primary-light);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 1.2rem;
+    }
+    
+    .company-card .card-text {
+        color: var(--text-secondary);
+        margin-bottom: 1.25rem;
+        font-size: 0.9rem;
+        height: 3.8rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+    
+    .company-card .btn-website {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: var(--transition);
+        font-size: 0.85rem;
+    }
+    
+    .company-card .btn-website:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+    
+    .company-card .btn-primary {
+        width: 100%;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border: none;
+        border-radius: 0.5rem;
+        color: var(--text-light);
+        font-weight: 600;
+        transition: var(--transition);
+    }
+    
+    .company-card .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+        box-shadow: 0 5px 15px rgba(98, 0, 234, 0.3);
+    }
+    
+    .back-link {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        color: var(--primary-light);
+        border: 2px solid var(--primary-light);
+        border-radius: 2rem;
+        font-weight: 600;
+        transition: var(--transition);
+        margin-top: 3rem;
+    }
+    
+    .back-link:hover {
+        background: rgba(98, 0, 234, 0.1);
+        color: var(--primary-light);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    @media (max-width: 991.98px) {
+        .category-header {
+            padding: 2rem 1.5rem;
+        }
+        
+        .category-header img {
+            max-height: 150px;
+            margin-top: 1rem;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        .category-header {
+            text-align: center;
+            padding: 1.8rem 1.2rem;
+        }
+        
+        .category-header img {
+            margin: 1.5rem auto 0;
+            max-height: 130px;
+        }
+        
+        .company-card .card-img-top {
+            height: 140px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="category-header" data-aos="fade-up">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1>{{ category.name }}</h1>
+                    <p class="lead">{{ category.description }}</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    {% if category.image %}
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}" class="img-fluid">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title" data-aos="fade-up">Browse {{ category.name }} Brands</h2>
+        
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            {% for company in companies %}
+                <div class="col" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'50' }}">
+                    <div class="company-card">
+                        {% if company.logo %}
+                            <img src="{{ company.logo.url }}" class="card-img-top" alt="{{ company.name }}">
+                        {% else %}
+                            <div class="no-logo">
+                                <h3>{{ company.name }}</h3>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <h5 class="card-title">{{ company.name }}</h5>
+                            <p class="card-text">{{ company.description|truncatechars:100 }}</p>
+                            
+                            <div class="d-flex flex-column gap-2">
+                                {% if company.website %}
+                                    <a href="{{ company.website }}" class="btn btn-website" target="_blank">
+                                        <i class="fas fa-external-link-alt me-2"></i>Visit Website
+                                    </a>
+                                {% endif %}
+                                
+                                <a href="{% url 'company_products' category.slug company.slug %}" class="btn btn-primary">
+                                    <i class="fas fa-shopping-basket me-2"></i>View Products
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12" data-aos="fade-up">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>No companies available for this category at the moment. Please check back later.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center">
+            <a href="{% url 'home' %}" class="back-link" data-aos="fade-up">
+                <i class="fas fa-arrow-left me-2"></i>Back to Categories
+            </a>
+        </div>
+    </div>
+{% endblock %} 
